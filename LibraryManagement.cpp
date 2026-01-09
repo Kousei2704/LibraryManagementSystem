@@ -2,206 +2,391 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <cmath>
+#include <algorithm>
+#include <iomanip>
+#include <cstdlib> // Thu vien cho ham atoi
+
 using namespace std;
+
+// Khai bao truoc class Book de dung trong ham so sanh
+class Book;
+bool compareBooksByTitle(const Book &a, const Book &b);
 
 class Book {
 private:
-	int id;
-	string title;
-	string author;
-	int quantity;
+    string id;
+    string title;
+    string author;
+    int quantity;
 public:
-	Book(): id(0), title(""), author(""), quantity(0) {}
-	Book(int id, string t, string a, int q) : id(id), title(t), author(a), quantity(q) {}
-	
-	int getId() const { return id; }
-	void setId(int id) {this->id = id;}
-	
-	string getTitle() const { return title; }
-	void setTitle(string title) {this->title = title;}
-	
-	string getAuthor() const { return author; }
-	void setAuthor(string author) {this->author = author;}
-	
-	int getQuantity() const { return quantity; }
-	void setQuantity(int quantity) {this->quantity = quantity;}
-	
-	void displayInfo() const {
-		cout << "Book ID: " << id
-		 	<< " - Title: " << title
-		 	<< " - Author: " << author
-		 	<< " - Quantity left: " << quantity << endl;
-	}
+    Book(): id(""), title(""), author(""), quantity(0) {}
+    Book(string id_, string title_, string author_, int quantity_): id(id_), title(title_), author(author_), quantity(quantity_) {}
+    
+    string getID() const { return id; }
+    void setID(string id) { this->id = id; }
+    string getTitle() const { return title; }
+    void setTitle(string title) { this->title = title; }
+    string getAuthor() const { return author; }
+    void setAuthor(string author) { this->author = author; }
+    int getQuantity() const { return quantity; }
+    void setQuantity(int quantity) { this->quantity = quantity; }
+    
+    void displayBook() const {
+        cout << left << setw(10) << id
+            << left << setw(30) << title
+            << left << setw(20) << author
+            << right << setw(10) << quantity << '\n';
+    }
+
+    bool checkAvailable() {
+        return quantity > 0;
+    }
+
+    void updateQuantity(int q) {
+        quantity += q;
+    }
 };
 
-class BorrowableBook : public Book {
-private:
-	string borrowDate;
-	bool isBorrowed;
-public:
-	BorrowableBook(): Book(), borrowDate(""), isBorrowed(false) {}
-	BorrowableBook(int id, string t, string a, int q, string bd) : Book(id, t, a, q), borrowDate(bd) {}
-	BorrowableBook(int id, string t) : Book(id, t, "Unknown", 1), borrowDate(""), isBorrowed(false) {}
+// Ham so sanh dung cho sort (thay the lambda cua C++11)
+bool compareBooksByTitle(const Book &a, const Book &b) {
+    return a.getTitle() < b.getTitle();
+}
 
-	void borrowBook() {
-		int q = getQuantity();
-		if (q<=0) {
-			cout <<"Khong co sach de muon." << endl;
-			return;
-		}
-		setQuantity(q - 1);
-		cout << "Muon thanh cong!" << endl; 	
-	}
-		 
-	void returnBook() {
-		int q = getQuantity();
-		if (q<=0) {
-			cout << "Khong co sach de tra." << endl;
-			return;
-		}
-		setQuantity(q + 1);
-		cout <<"Tra sach thanh cong." << endl;
-	}
-};
-
-class LibraryManagement {
+class User {
 private:
-	vector<BorrowableBook> books;
+    string name;
+    string user_id;
+    vector<Book> borrowed_books;
 public:
-	LibraryManagement(BorrowableBook book) {
-		books.push_back(book);
-	}
-	//1.Them sach
-	void addBooks(BorrowableBook book) {
-		books.push_back(book);
-		cout <<"Da them sach:" << book.getTitle() << endl;
-	}
-	//2.Xem sach
-	void viewBooks(BorrowableBook book) {
-		cout <<"Thong tin sach duoc yeu cau:" << book.getTitle() << endl;
-		book.displayInfo();
-	}
-	//3.Xem tat ca sach
-	void viewAllBooks() {
-        cout << "\n--- Danh sach tat ca sach trong thu vien ---" << endl;
-        for (const auto& book : books) {
-            book.displayInfo();
+    User(): name(""), user_id("") {}
+    User(string name_, string uid_): name(name_), user_id(uid_) {}
+
+    string getUID() const { return user_id; }
+    string getName() const { return name; }
+
+    void borrowBook(Book& b) {
+        if (b.checkAvailable()) {
+            borrowed_books.push_back(b);
+            b.updateQuantity(-1);
+            cout << "Nguoi dung " << name << " (ID: " << user_id << ") da muon sach:\n ";
+            b.displayBook();
+        } else {
+            cout << "Sach:\n";
+            b.displayBook();
+            cout << " -> Hien tai khong the cho muon (het hang).\n";
         }
     }
-    //4.Tim sach
-    void searchBook(string title) {
-    	bool found
-    	cout <<"\n--- Ket qua tim kiem " << title << "---" << endl;
-    	for (const auto& book : books) {
-    		if (book.getTitle() == title) {
-    			book.displayInfo();
-    			found = true;
-			}
-		}
-		if (!found) cout <<"Khong tim thay sach nay." << endl;
-	}
-	//5.Muon sach
-	void issueFunc(string id) {
-		for (auto&book : books) {
-			if (book.getId() == id) {
-				if (!book.isBorrowed) {
-					book.isBorrowed = true;
-					cout <<"Muon thanh cong sach ID:" << id << endl;
-				} else {
-					cout <<"Sach ID " << id << "Da duoc muon boi nguoi khac." << endl;
-				}
-				return;
-				}
-			}
-			cout <<"Khong tim thay ID sach:" << id << endl;
-	}
-	//6.Tra sach
-	void returnFunc(string id) {
-		for (auto&book : books) {
-			if (book.getId() == id) {
-				if (!book.isBorrowed) {
-					book.isBorrowed = false;
-					cout <<"Tra thanh cong sach ID:" << id << endl;
-			} else {
-				cout <<"Sach ID" << id << "Dach nay hien tai chua duoc muon." << endl;
-			}
-			return;
-			}
-		}
-		cout <<"Khong tim thay ID sach:" << id << endl;
-	}
-	//7.Luu du lieu ra file
-	void savetoFile() {
-		ofstream outFile("library_data.txt");
-		if (outFile.is_open()) {
-			for (const auto&book : books) {
-				outFile << book.id << "," << book.title << "," << book.isBorrowed << endl;	
-			}
-			outFile.close();
-			cout <<"Da luu du lieu vao file library_data.txt" << endl;
-	} else {
-		    cout <<"Loi mo file de ghi" << endl;
-		}
-	}
-	//8.Doc du lieu tu file
-	void loadfromFile() {
-		ifstream inFile("library_data.txt");
-		if (inFile.is_open()) {
-			books.clear();
-			string line;
-			while (getline(inFile,line)) {
-				size_t pos1 = line.find(',');
-				size_t pos2 = line.find_last_of(',');
-				
-				if (pos1 != string::npos && pos2 != string::npos) {
-					string id = line.substr(0,pos1);
-					string title = line.substr(pos1 + 1, pos2 - pos1 -1 );
-					bool status = (line.substr(pos2 + 1) == "1");
-					
-					Borrowable Book b(id, title);
-					b.isBorrowed = status;
-					book.push.back(b);
-				}
-			}
-			inFile.close();
-			cout <<"Da load du lieu tu file" << endl;
-	} else {
-		    cout <<"Khong tim thay file du lieu hoac loi file mo!" << endl;
-		}
-	}
-	
+
+    bool returnBook(string bookId) {
+        for (size_t i = 0; i < borrowed_books.size(); i++) {
+            if (borrowed_books[i].getID() == bookId) {
+                borrowed_books.erase(borrowed_books.begin() + i);
+                cout << "Da tra sach thanh cong!\n";
+                return true;
+            } 
+        }
+        cout << "Ban khong muon cuon sach nay.\n";
+        return false;
+    }
+
+    void displayBorrowedBooks() {
+        if (borrowed_books.empty()) {
+            cout << "Khong co sach nao dang muon." << '\n';
+            return;
+        }
+        cout << "--- Sach dang muon ---\n";
+        for (size_t i = 0; i < borrowed_books.size(); i++) {
+            cout << "- " << borrowed_books[i].getTitle() << " (ID: " << borrowed_books[i].getID() << ")\n";
+        }
+    }
+
+    string createUserFile() const {
+        return "User_" + user_id + ".txt";
+    }
+
+    void writeToFile(const string &filename) {
+        ofstream out(filename.c_str());
+        for (size_t i = 0; i < borrowed_books.size(); i++) {
+            out << borrowed_books[i].getID() << '|' 
+                << borrowed_books[i].getTitle() << '|' 
+                << borrowed_books[i].getAuthor() << '|' << 1 << '\n';
+        }
+        out.close();
+    }
 };
 
-//Ham main de kiem tra
-int main() {
-//1.Tao sach
-    BorrowableBook b1(001, "Lap trinh C++");
-    BorrowableBook b2(002, "Cau truc du lieu");
-    BorrowableBook b3(003, "Giai tich 1");
+class Library {
+public:
+    vector<Book> bookList;
 
-//2.Khoi tao LibraryManagement voi cuon sach thu 1
-    LibraryManagement lib(b1);
+    void addBook(const Book& book) {
+        bool found = false;
+        for(size_t i = 0; i < bookList.size(); i++) {
+            if(bookList[i].getID() == book.getID()) {
+                cout << "ID da ton tai. Cap nhat thong tin sach cu.\n";
+                bookList[i].setTitle(book.getTitle());
+                bookList[i].setAuthor(book.getAuthor());
+                bookList[i].setQuantity(book.getQuantity());
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found) {
+            bookList.push_back(book);
+            cout << "Them sach thanh cong!\n";
+        }
+    }
 
-//3.Them sach khac
-    lib.addBooks(b2);
-    lib.addBooks(b3);
-
-//4.Hien thi danh sach
-    lib.viewAllBooks();
+    void removeBook(const string &id) {
+        bool found = false;
+        for(int i = bookList.size() - 1; i >= 0; i--) {
+            if(bookList[i].getID() == id) {
+                bookList.erase(bookList.begin() + i);
+                cout << "Da xoa sach khoi thu vien.\n";
+                found = true;
+                break; 
+            }
+        }
+        if (!found) cout << "Khong tim thay sach!\n";
+    }
     
-//5.Tim kiem
-    lib.searchBook("Cau truc du lieu");
+    // Tra ve con tro NULL neu khong tim thay (chuan C++ cu)
+    Book* getBookRefByID(const string& id) {
+        for (size_t i = 0; i < bookList.size(); i++) {
+            if (bookList[i].getID() == id) return &bookList[i];
+        }
+        return NULL;
+    }
 
-//6.Muon sach
-    lib.issueFunc(002);
-    lib.issueFunc(002);
+    void searchBookByTitle(const string& title) {
+        bool found = false;
+        for (size_t i = 0; i < bookList.size(); i++) {
+            if (bookList[i].getTitle() == title) {
+                bookList[i].displayBook();
+                found = true;
+            }
+        }
+        if (!found) cout << "Khong tim thay sach!\n";
+    }
+    
+    void searchBookByID(const string& id) {
+        bool found = false;
+        for (size_t i = 0; i < bookList.size(); i++) {
+            if (bookList[i].getID() == id) {
+                bookList[i].displayBook();
+                found = true;
+            }
+        }
+        if (!found) cout << "Khong tim thay sach!\n";
+    }
 
-//7.Tra sach
-    lib.returnFunc(002);
+    void searchBookByAuthor(const string& author) {
+        bool found = false;
+        for (size_t i = 0; i < bookList.size(); i++) {
+            if (bookList[i].getAuthor() == author) {
+                bookList[i].displayBook();
+                found = true;
+            }
+        }
+        if (!found) cout << "Khong tim thay sach!\n";
+    }
+    
+    void displayBooks() {
+        if (bookList.empty()) {
+            cout << "Thu vien khong co sach.\n";
+            return;
+        }
+        
+        vector<Book> sortedList = bookList;
+        sort(sortedList.begin(), sortedList.end(), compareBooksByTitle);
+        
+        cout << left << setw(10) << "ID"
+                << left << setw(30) << "Ten sach"
+                << left << setw(20) << "Tac gia"
+                << right << setw(10) << "So luong" << '\n';
+        cout << string(70, '-') << '\n';
+        
+        for (size_t i = 0; i < sortedList.size(); i++) {
+            sortedList[i].displayBook();
+        }
+    }
 
-//8.Luu file
-    lib.saveToFile();
+    void writeToFile(const string &filename) {
+        ofstream out(filename.c_str());
+        for (size_t i = 0; i < bookList.size(); i++) {
+            out << bookList[i].getID() << '|' 
+                << bookList[i].getTitle() << '|' 
+                << bookList[i].getAuthor() << '|' 
+                << bookList[i].getQuantity() << '\n';
+        }
+        out.close();
+    }
 
+    void loadFromFile(const string& filename) {
+        ifstream f(filename.c_str());
+        if (!f.is_open()) return;
+        string line;
+        while (getline(f, line)) {
+            if (line.empty()) continue;
+            string id, title, author;
+            int quantity;
+            size_t p1 = line.find('|');
+            size_t p2 = line.find('|', p1 + 1);
+            size_t p3 = line.find('|', p2 + 1);
+            if (p1 != string::npos && p2 != string::npos && p3 != string::npos) {
+                id = line.substr(0,p1);
+                title = line.substr(p1+1, p2-p1-1);
+                author = line.substr(p2+1, p3-p2-1);
+                // Dung atoi (string to int) thay vi stoi de tranh loi C++11
+                quantity = atoi(line.substr(p3+1).c_str());
+                bookList.push_back(Book(id,title,author,quantity));
+            }
+        }
+        f.close();
+    }
+};
+
+vector<User> users;
+
+int main() {
+    Library lib;
+    lib.loadFromFile("library.txt");
+    int choice;
+    
+    do {
+        cout << "\n     HE THONG QUAN LY THU VIEN HUST     \n";
+        cout << "1. Them sach" << '\n';
+        cout << "2. Xoa sach khoi thu vien" << '\n';
+        cout << "3. Tim sach theo ten" << '\n';
+        cout << "4. Tim sach theo tac gia" << '\n';
+        cout << "5. Tim sach theo ID" << '\n';
+        cout << "6. Xem tat ca sach trong thu vien" << '\n';
+        cout << "7. Muon sach" << '\n';
+        cout << "8. Tra sach" << '\n';
+        cout << "9. Them nguoi dung" << '\n';
+        cout << "10. Xoa nguoi dung" << '\n';
+        cout << "11. Thoat chuong trinh" << '\n';
+        cout << "Chon thao tac: ";
+        // Fix loi lap vo han neu nhap chu
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            choice = 0;
+        }
+        cin.ignore();
+
+        string id, uid, title, author, name;
+        int quantity;
+        Book* bookPtr = NULL;
+        bool userFound = false;
+        int userIndex = -1;
+
+        switch (choice) {
+        case 1:
+            cout << "Nhap ID sach: "; getline(cin, id);
+            cout << "Nhap ten sach: "; getline(cin, title);
+            cout << "Nhap ten tac gia: "; getline(cin, author);
+            cout << "Nhap so luong sach: "; cin >> quantity;
+            lib.addBook(Book(id, title, author, quantity));
+            break;
+        case 2:
+            cout << "Dien ID sach can xoa: "; getline(cin, id);
+            lib.removeBook(id);
+            break;
+        case 3:
+            cout << "Dien ten sach: "; getline(cin, title);
+            lib.searchBookByTitle(title);
+            break;
+        case 4:
+            cout << "Dien ten tac gia: "; getline(cin, author);
+            lib.searchBookByAuthor(author);
+            break;
+        case 5:
+            cout << "Dien ID sach: "; getline(cin, id);
+            lib.searchBookByID(id);
+            break;
+        case 6:
+            lib.displayBooks();
+            break;
+        case 7: // Muon sach
+            cout << "Nhap ID nguoi dung cua ban: "; getline(cin, uid);
+            for (size_t i = 0; i < users.size(); i++) {
+                if (users[i].getUID() == uid) {
+                    userIndex = i;
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) {
+                cout << "Khong tim thay nguoi dung!\n";
+            } else {
+                cout << "Nhap ID sach muon muon: "; getline(cin, id);
+                bookPtr = lib.getBookRefByID(id);
+                if (bookPtr != NULL) {
+                    users[userIndex].borrowBook(*bookPtr);
+                } else {
+                    cout << "Khong tim thay sach co ID nay trong thu vien.\n";
+                }
+            }
+            break;
+
+        case 8: // Tra sach
+            cout << "Nhap ID nguoi dung cua ban: "; getline(cin, uid);
+             for (size_t i = 0; i < users.size(); i++) {
+                if (users[i].getUID() == uid) {
+                    userIndex = i;
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) {
+                cout << "Khong tim thay nguoi dung!\n";
+            } else {
+                users[userIndex].displayBorrowedBooks();
+                cout << "Nhap ID sach muon tra: "; getline(cin, id);
+                
+                if (users[userIndex].returnBook(id)) {
+                    bookPtr = lib.getBookRefByID(id);
+                    if (bookPtr != NULL) {
+                        bookPtr->updateQuantity(1);
+                        cout << "Da cap nhat lai so luong trong kho.\n";
+                    }
+                }
+            }
+            break;
+
+        case 9:
+            cout << "Nhap ID nguoi dung moi: "; getline(cin, uid);
+            cout << "Nhap ten nguoi dung: "; getline(cin, name);
+            users.push_back(User(name, uid));
+            cout << "Them nguoi dung thanh cong!\n";
+            break;
+
+        case 10: // Xoa nguoi dung
+            cout << "Nhap ID nguoi dung can xoa: "; getline(cin, uid);
+            for (size_t i = 0; i < users.size(); i++) {
+                if (users[i].getUID() == uid) {
+                    users.erase(users.begin() + i);
+                    cout << "Da xoa nguoi dung.\n";
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) cout << "Khong tim thay nguoi dung.\n";
+            break;
+
+        case 11:
+            lib.writeToFile("library.txt");
+            for(size_t i=0; i < users.size(); i++) {
+                users[i].writeToFile(users[i].createUserFile());
+            }
+            cout << "Da luu du lieu va thoat.\n";
+            break;
+        default:
+            cout << "Ban chua chon thao tac, hay thu lai.\n";
+            break;
+        }
+    } while (choice != 11);
     return 0;
 }

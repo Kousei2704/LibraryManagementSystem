@@ -3,14 +3,12 @@
 MỤC LỤC
 
 I.	Giới thiệu dự án
-II.	Phân công công việc
-III.	Tổng quan dự án
-IV.	Chi tiết các Class và chức năng
-V.	Các thuật toán quan trọng
-VI.	Hướng dẫn sử dụng
-VII.	Kết luận
-VIII.	Tài liệu tham khảo
-
+II.	Tổng quan dự án
+III. Chi tiết các Class và chức năng
+IV.	Các thuật toán quan trọng
+V.	Hướng dẫn sử dụng
+VI.	Kết luận
+VII. Tài liệu tham khảo
 
 
 
@@ -18,37 +16,8 @@ I. Giới thiệu dự án
 Quản lý thư viện là một bài toán điển hình trong lập trình ứng dụng, yêu cầu sự kết hợp nhuần nhuyễn giữa việc tổ chức dữ liệu và logic nghiệp vụ. Với mục tiêu xây dựng một phần mềm có tính ứng dụng cao và giao diện thân thiện, em/nhóm em đã chọn đề tài "Hệ thống quản lý thư viện" cho bài tập lớn môn Ngôn ngữ lập trình.
 Sử dụng ngôn ngữ C++ – một ngôn ngữ mạnh mẽ về hiệu năng và hỗ trợ tốt mô hình lập trình hướng đối tượng (OOP) – chương trình được thiết kế để giải quyết các vấn đề thực tế như: quản lý kho sách, theo dõi lịch sử mượn trả và tìm kiếm thông tin nhanh chóng. Báo cáo này ghi lại quá trình thực hiện dự án, các kiến thức C++ nâng cao đã áp dụng cũng như những bài học kinh nghiệm rút ra trong quá trình phát triển phần mềm.
 
-II. Phân công công việc
--	Dự án 1 thành viên: Trương Quang Khánh – 202415008
-STT	Hạng mục công việc (Module)	Chi tiết nhiệm vụ	Vai trò tương ứng
-1	Phân tích & Thiết kế hệ thống	- Xác định các thực thể: Book, User, Library.
-- Thiết kế các thuộc tính (Attributes) và phương thức (Methods) cho từng Class.
-- Vẽ sơ đồ lớp (Class Diagram) sơ bộ.
 
-	System Architect
-2	Xây dựng cấu trúc dữ liệu (Core)	- Cài đặt Class Book: Getter/Setter, quản lý số lượng.
-- Cài đặt Class User: Quản lý thông tin cá nhân, vector sách đang mượn.
-- Cài đặt Class Library: Quản lý kho sách tổng (vector<Book>).
-	Backend Developer
-3	Xử lý lưu trữ dữ liệu (File I/O)	- Viết hàm đọc/ghi file library.txt (Dữ liệu sách).
-- Viết hàm đọc/ghi file users.txt và User_ID.txt (Dữ liệu người dùng & lịch sử mượn).
-- Xử lý chuẩn hóa chuỗi (String Parsing) để tách dữ liệu ngăn cách bởi dấu |.	Database Engineer
-4	Phát triển thuật toán & Logic	- Cài đặt thuật toán tìm kiếm tuyến tính (theo Tên, ID, Tác giả).
-- Cài đặt thuật toán sắp xếp danh sách sách (Sort).
-- Xử lý logic nghiệp vụ: Kiểm tra tồn kho khi mượn, cập nhật số lượng khi trả.	Algorithm Dev
-5	Xây dựng giao diện & Điều hướng	- Thiết kế Menu điều hướng (Switch-case) cho Admin và User.
-- Xử lý các ngoại lệ nhập liệu (trôi lệnh cin, nhập sai kiểu dữ liệu).
-- Tối ưu hóa trải nghiệm người dùng trên màn hình Console.	Frontend/UI Dev
-6	Kiểm thử & Đóng gói (Testing)	- Kiểm thử các trường hợp biên: Mượn sách khi hết hàng, trả sách không mượn, nhập sai ID.
-- Soát lỗi bộ nhớ và logic lưu file.
-- Viết báo cáo tổng kết.	Tester / QC
-
-
-
-
-
-
-III. Tổng quan dự án 
+II. Tổng quan dự án 
  
 "Hệ thống Quản lý Thư viện" (Library Management System)
 
@@ -58,7 +27,7 @@ Chương trình là một hệ thống quản lý thư viện hoàn chỉnh cho 
 •	User (Người dùng/Độc giả): Đăng ký, đăng nhập, tìm sách, mượn và trả sách.
 Dữ liệu của sách và người dùng được lưu trữ bền vững trong các file .txt, đảm bảo thông tin không bị mất khi tắt chương trình.
 
-IV. Các Class và chức năng
+III. Các Class và chức năng
 
 A. Class Book (Đối tượng Sách)
 •	Vai trò: Đại diện cho một cuốn sách cụ thể.
@@ -101,7 +70,9 @@ o	compareBooksByTitle: Giúp sắp xếp sách theo bảng chữ cái.
 1.	Menu Admin: Gọi các chức năng của class Library.
 2.	Menu User: Đăng nhập, load dữ liệu cá nhân, sau đó gọi các chức năng của class User.
 3.	Đăng ký: Tạo user mới và lưu vào users.txt.
-V. Các thuật toán quan trọng
+
+
+IV. Các thuật toán quan trọng
 
 1. Thuật toán Tìm kiếm Tuyến tính (Linear Search)
 •	Cơ chế: Duyệt qua từng phần tử trong danh sách (vector) từ đầu đến cuối để tìm phần tử thỏa mãn điều kiện.
@@ -137,14 +108,7 @@ o	Logic: Sau khi xóa một phần tử ở giữa, thuật toán của vector s
 o	Độ phức tạp: $O(N)$ (trong trường hợp xấu nhất là xóa phần tử đầu tiên).
 
 
-
-
-
-
-
-
-
-VI. Hướng dẫn sử dụng:
+V. Hướng dẫn sử dụng:
 
 1. Main Menu ( Giao diện chính )
 Khi khởi động chương trình, bạn sẽ thấy 4 lựa chọn:
@@ -203,7 +167,7 @@ o	Hệ thống sẽ xóa sách khỏi danh sách mượn của bạn và cộng 
 •	Đăng xuất (Chọn 8): Lưu dữ liệu cá nhân của bạn và quay lại màn hình chính.
 
 
-VII. Kết luận
+VI. Kết luận
 1. Tổng quan sản phẩm:
 Xây dựng thành công hệ thống quản lý thư viện trên nền tảng Console, giải quyết bài toán quản lý sách với quy trình khép kín: Admin quản lý kho (Thêm/Sửa/Xóa) và User thao tác mượn/trả. Hệ thống đảm bảo tính bền vững của dữ liệu thông qua cơ chế lưu trữ File (.txt), không bị mất thông tin khi tắt ứng dụng.
 2. Kỹ thuật cốt lõi: 
@@ -214,7 +178,7 @@ Dự án áp dụng triệt để các kiến thức nền tảng của C++:
 3. Đánh giá & Hướng phát triển: 
 Hệ thống hoạt động ổn định, logic cập nhật số lượng tồn kho chính xác. Tuy nhiên, giao diện dòng lệnh còn hạn chế về trải nghiệm người dùng và chưa có bảo mật cao. Hướng phát triển tiếp theo là nâng cấp lên giao diện đồ họa (GUI) và tích hợp Cơ sở dữ liệu (SQL) để xử lý lượng dữ liệu lớn hơn.
 
-VIII. Tài liệu tham khảo
+VII. Tài liệu tham khảo
 TusharKukra/LMS-Library-Management-System
 https://github.com/ashutoshsuman99/Library-Management-System.git
 https://github.com/abdulsamie10/Library-Management-System.git
